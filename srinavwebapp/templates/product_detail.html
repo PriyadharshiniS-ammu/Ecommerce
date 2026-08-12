@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }} - Srinav ShopMart{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'homepage' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'product_list' %}">Products</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'product_list' %}?category={{ product.category.id }}">{{ product.category.name }}</a></li>
+            <li class="breadcrumb-item active">{{ product.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Product Image -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 400px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-image" style="font-size: 4rem; color: white;"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Details -->
+        <div class="col-md-6 mb-4">
+            <h1 class="mb-2">{{ product.name }}</h1>
+            <p class="text-muted mb-3">Category: <a href="{% url 'product_list' %}?category={{ product.category.id }}">{{ product.category.name }}</a></p>
+
+            <!-- Rating -->
+            <div class="mb-3">
+                {% if average_rating %}
+                    <div class="star-rating">
+                        {% for i in "12345" %}
+                            {% if i|add:"0" <= average_rating %}
+                                <i class="fas fa-star"></i>
+                            {% elif i|add:"0" == average_rating|add:"0"|add:"1" and average_rating|stringformat:"0.1f" != average_rating|stringformat:"s" %}
+                                <i class="fas fa-star-half-alt"></i>
+                            {% else %}
+                                <i class="far fa-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <small class="text-muted">{{ average_rating }}/5 ({{ review_count }} reviews)</small>
+                {% else %}
+                    <small class="text-muted">No reviews yet</small>
+                {% endif %}
+            </div>
+
+            <!-- Price -->
+            <h2 class="text-success mb-3">₹{{ product.price }}</h2>
+
+            <!-- Stock Status -->
+            {% if product.is_in_stock %}
+                <span class="badge bg-success mb-3">In Stock ({{ product.stock }} available)</span>
+            {% else %}
+                <span class="badge bg-danger mb-3">Out of Stock</span>
+            {% endif %}
+
+            <!-- Description -->
+            <p class="mb-4">{{ product.description }}</p>
+
+            <!-- Add to Cart -->
+            {% if user.is_authenticated %}
+                <form method="post" action="{% url 'add_to_cart' product.id %}" class="mb-4">
+                    {% csrf_token %}
+                    <div class="row g-2">
+                        <div class="col-auto">
+                            {{ add_to_cart_form.quantity }}
+                        </div>
+                        <div class="col">
+                            <button type="submit" class="btn btn-warning w-100" {% if not product.is_in_stock %}disabled{% endif %}>
+                                <i class="fas fa-cart-plus me-2"></i>Add To Cart
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            {% else %}
+                <div class="alert alert-info mb-4">
+                    <a href="{% url 'login' %}" class="btn btn-warning">Login to Add to Cart</a>
+                </div>
+            {% endif %}
+
+            <!-- Share -->
+            <div class="mb-4">
+                <h5>Share:</h5>
+                <a href="#" class="btn btn-sm btn-outline-primary"><i class="fab fa-facebook"></i></a>
+                <a href="#" class="btn btn-sm btn-outline-info"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="btn btn-sm btn-outline-danger"><i class="fab fa-pinterest"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reviews Section -->
+    <hr class="my-5">
+
+    <div class="row">
+        <div class="col-lg-8">
+            <h3 class="mb-4">Customer Reviews</h3>
+
+            {% if reviews %}
+                {% for review in reviews %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="card-title">{{ review.user.get_full_name|default:review.user.username }}</h5>
+                                    <div class="star-rating mb-2">
+                                        {% for i in "12345" %}
+                                            {% if i|add:"0" <= review.rating %}
+                                                <i class="fas fa-star"></i>
+                                            {% else %}
+                                                <i class="far fa-star"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <p class="card-text">{{ review.comment }}</p>
+                                    <small class="text-muted">{{ review.created_at|date:"M d, Y" }}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-muted">No reviews yet. Be the first to review!</p>
+            {% endif %}
+        </div>
+
+        <!-- Add Review -->
+        <div class="col-lg-4">
+            {% if user.is_authenticated %}
+                <div class="card">
+                    <div class="card-header bg-warning">
+                        <h5 class="mb-0">Write a Review</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if user_review %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-check-circle me-2"></i>You have already reviewed this product.
+                            </div>
+                        {% else %}
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label class="form-label">Rating</label>
+                                    <div>
+                                        {% for rating, label in review_form.rating.field.choices %}
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="rating" id="rating{{ rating }}" value="{{ rating }}" required>
+                                                <label class="form-check-label" for="rating{{ rating }}">
+                                                    {% for i in "12345" %}
+                                                        {% if i|add:"0" <= rating %}
+                                                            <i class="fas fa-star star-rating"></i>
+                                                        {% else %}
+                                                            <i class="far fa-star"></i>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    {{ review_form.comment }}
+                                </div>
+                                <button type="submit" class="btn btn-warning w-100">Submit Review</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <a href="{% url 'login' %}" class="btn btn-warning">Login to Write a Review</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

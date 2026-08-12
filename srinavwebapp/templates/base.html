@@ -1,0 +1,313 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Srinav ShopMart - Online Store{% endblock %}</title>
+    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #198754;
+            --primary-hover: #157347;
+            --secondary-color: #14532d;
+            --dark-color: #0f2f15;
+            --light-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --button-shadow: 0 10px 30px rgba(25, 135, 84, 0.18);
+        }
+
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            background-color: #ecf7ed;
+            color: #1f2d1f;
+        }
+
+        .navbar {
+            background-color: #14532d !important;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+        }
+
+        .navbar-brand {
+            font-size: 1.6rem;
+            color: #f8f9fa !important;
+            letter-spacing: 0.04em;
+        }
+
+        .btn-warning,
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            border: none;
+            color: #fff;
+            box-shadow: var(--button-shadow);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-warning:hover,
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-hover), #0f5132);
+            transform: translateY(-1px);
+            box-shadow: 0 14px 35px rgba(25, 135, 84, 0.24);
+        }
+
+        .hero {
+            background: url('{% static "img/hero-bg.svg" %}') center/cover no-repeat, linear-gradient(135deg, #1b5f34 0%, #48a14d 100%);
+            min-height: 62vh;
+            display: flex;
+            align-items: center;
+            color: #f8f9fa;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at top left, rgba(255,255,255,0.12), transparent 28%), radial-gradient(circle at bottom right, rgba(255,255,255,0.08), transparent 35%);
+            pointer-events: none;
+        }
+
+        .hero .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .product-card {
+            transition: all 0.3s ease;
+            border: none;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+            background-color: var(--card-bg);
+        }
+
+        .product-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+        }
+
+        .product-card img {
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .category-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 20px;
+            overflow: hidden;
+            background-color: var(--card-bg);
+            border: 1px solid rgba(25, 135, 84, 0.12);
+        }
+
+        .category-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 32px rgba(0,0,0,0.10);
+        }
+
+        .category-card img {
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .star-rating {
+            color: #ffc107;
+        }
+
+        .btn-primary:focus,
+        .btn-warning:focus {
+            box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.35);
+        }
+
+        .badge-custom {
+            background-color: var(--primary-color);
+            color: #000;
+        }
+
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            margin-top: 5rem;
+        }
+
+        .footer-link {
+            color: white !important;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: var(--primary-color) !important;
+        }
+
+        .alert-custom {
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-group-custom .btn {
+            border-radius: 0;
+        }
+
+        .btn-group-custom .btn:first-child {
+            border-radius: 8px 0 0 8px;
+        }
+
+        .btn-group-custom .btn:last-child {
+            border-radius: 0 8px 8px 0;
+        }
+
+        .spinner-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 300px;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #dc3545;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .breadcrumb {
+            background-color: var(--light-color);
+            border-radius: 8px;
+        }
+
+        .form-group-custom .form-control,
+        .form-group-custom .form-select {
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+
+        .form-group-custom .form-control:focus,
+        .form-group-custom .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'homepage' %}">
+                <img src="{% static 'img/logo.svg' %}" alt="Srinav ShopMart" width="40" height="40" class="me-2">
+                <span>Srinav ShopMart</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <form class="d-flex mx-auto w-sm-100 me-3" method="GET" action="{% url 'product_list' %}">
+                    <input class="form-control me-2" type="search" placeholder="Search products..." name="search" value="{{ search_query }}">
+                    <button class="btn btn-warning" type="submit">Search</button>
+                </form>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'homepage' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'product_list' %}">Products</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'profile' %}">
+                                <i class="fas fa-user me-1"></i>{{ user.first_name|default:user.username }}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'order_history' %}">Orders</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link position-relative" href="{% url 'view_cart' %}">
+                                <i class="fas fa-shopping-cart"></i> Cart
+                                {% if user.cart.get_total_items > 0 %}
+                                    <span class="cart-badge">{{ user.cart.get_total_items }}</span>
+                                {% endif %}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'signup' %}">Sign Up</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-warning ms-2" href="{% url 'view_cart' %}">Cart</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show alert-custom" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>{{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    {% block content %}{% endblock %}
+
+    <!-- Footer -->
+    <footer class="py-5 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5 class="mb-3">About Srinav ShopMart</h5>
+                    <p>Your one-stop shop for quality products at unbeatable prices. Shop with confidence!</p>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5 class="mb-3">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'homepage' %}" class="footer-link">Home</a></li>
+                        <li><a href="{% url 'product_list' %}" class="footer-link">Products</a></li>
+                        <li><a href="#" class="footer-link">About Us</a></li>
+                        <li><a href="#" class="footer-link">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5 class="mb-3">Contact Us</h5>
+                    <p>
+                        <i class="fas fa-phone me-2"></i>+1 (555) 123-4567<br>
+                        <i class="fas fa-envelope me-2"></i>support@srinavshopmart.com<br>
+                        <i class="fas fa-map-marker-alt me-2"></i>123 Main St, City, Country
+                    </p>
+                </div>
+            </div>
+            <hr class="bg-light">
+            <div class="text-center">
+                <p>&copy; 2024 Srinav ShopMart. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

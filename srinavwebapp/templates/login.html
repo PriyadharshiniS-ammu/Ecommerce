@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Srinav ShopMart{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0">Login to Your Account</h4>
+                </div>
+                <div class="card-body">
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3 form-group-custom">
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <small class="text-danger">{{ form.email.errors.0 }}</small>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3 form-group-custom">
+                            {{ form.password }}
+                            {% if form.password.errors %}
+                                <small class="text-danger">{{ form.password.errors.0 }}</small>
+                            {% endif %}
+                        </div>
+                        <button type="submit" class="btn btn-warning w-100 mb-3">Login</button>
+                    </form>
+
+                    <div class="text-center">
+                        <p class="mb-0">Don't have an account? <a href="{% url 'signup' %}">Sign up here</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
